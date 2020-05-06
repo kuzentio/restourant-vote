@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Restaurant(models.Model):
@@ -24,26 +26,46 @@ class Restaurant(models.Model):
         return self.name
 
 
-class UserVote(models.Model):
-    POOR_RATE = 1
-    AVERAGE_RATE = 2
-    GOOD_RATE = 3
-    VERY_GOOD_RATE = 4
-    EXCELLENT_RATE = 5
-    RATE_CHOICES = (
-        (POOR_RATE, 'Poor'),
-        (AVERAGE_RATE, 'Average'),
-        (GOOD_RATE, 'Good'),
-        (VERY_GOOD_RATE, 'Very Good'),
-        (EXCELLENT_RATE, 'Excellent')
+class RestaurantRating(models.Model):
+    ZERO_VOTE = 0
+    restaurant = models.OneToOneField(Restaurant, on_delete=models.CASCADE)
+    total_rating = models.PositiveIntegerField(default=ZERO_VOTE)
+    total_voters = models.PositiveIntegerField(default=ZERO_VOTE)
+
+
+class UserRating(models.Model):
+    POOR_RATING = 1
+    AVERAGE_RATING = 2
+    GOOD_RATING = 3
+    VERY_GOOD_RATING = 4
+    EXCELLENT_RATING = 5
+    RATING_CHOICES = (
+        (POOR_RATING, 'Poor'),
+        (AVERAGE_RATING, 'Average'),
+        (GOOD_RATING, 'Good'),
+        (VERY_GOOD_RATING, 'Very Good'),
+        (EXCELLENT_RATING, 'Excellent')
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    rate = models.IntegerField(choices=RATE_CHOICES, default=GOOD_RATE)
+    rating = models.IntegerField(choices=RATING_CHOICES, default=GOOD_RATING)
     review = models.TextField()
 
     class Meta:
         unique_together = ('user', 'restaurant')
 
     def __str__(self):
-        return "{0}:{1}".format(self.restaurant, self.rate)
+        return "{0}:{1}".format(self.restaurant, self.rating)
+
+
+@receiver(post_save, sender=UserRating, dispatch_uid="update_restaurant_rating")
+def update_rating(sender, instance, **kwargs):
+    try:
+        rating = instance.restaurant.restaurantrating
+    except RestaurantRating.DoesNotExist:
+        rating = RestaurantRating.objects.create(
+            restaurant=instance.restaurant,
+        )
+    rating.total_rating += instance.rating
+    rating.total_voters += 1
+    rating.save()

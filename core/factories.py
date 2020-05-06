@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from factory.fuzzy import FuzzyChoice
 
-from core.models import Restaurant, UserVote
+from core.models import Restaurant, UserRating, RestaurantRating
 
 FAKE_RESTAURANT_NAMES = [
     'Blue & Seafood Bar', 'The Cuban', 'Amanda\'s', 'Monroe\'s'
@@ -30,10 +30,16 @@ class RestaurantFactory(factory.django.DjangoModelFactory):
     address = 'Test address'
 
 
-class UserVoteFactory(factory.django.DjangoModelFactory):
+class UserRatingFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = UserVote
+        model = UserRating
     user = factory.SubFactory(UserFactory)
     restaurant = factory.SubFactory(RestaurantFactory)
-    rate = FuzzyChoice([rate[0] for rate in UserVote.RATE_CHOICES])
+    rating = FuzzyChoice([rating[0] for rating in UserRating.RATING_CHOICES])
     review = 'Some random text'
+
+
+class RestaurantRatingFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = RestaurantRating
+    restaurant = factory.SubFactory(RestaurantFactory)
