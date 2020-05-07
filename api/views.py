@@ -15,8 +15,8 @@ class RestaurantViewSet(viewsets.ModelViewSet):
                 avg_rating=F('restaurantrating__total_rating') / F('restaurantrating__total_voters')
             ).order_by('-avg_rating')
         elif self.request.query_params.get('orderBy') == 'most_reviewed':
-            return qs.order_by('-restaurantrating__total_voters')
+            qs = qs.order_by('-restaurantrating__total_voters')
         elif self.request.query_params.get('orderBy') == 'most_rated':
-            return qs.order_by('-restaurantrating__total_rating')
+            qs = qs.order_by('-restaurantrating__total_rating')
 
         return qs
