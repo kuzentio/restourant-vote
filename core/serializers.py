@@ -4,15 +4,16 @@ from core.models import Restaurant
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
-    average_rating = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Restaurant
-        fields = ('name',
-                  'food_type',
-                  'city', 'address', 'average_rating')
+        fields = (
+            'id', 'name', 'food_type', 'city', 'address', 'average_rating'
+        )
 
-    def get_average_rating(self, obj):
-        if not hasattr('obj', 'restaurantrating'):
+    @staticmethod
+    def get_average_rating(obj):
+        if not hasattr(obj, 'restaurantrating'):
             return round(0.0, 2)
         return round(obj.restaurantrating.total_rating / obj.restaurantrating.total_voters, 2)

@@ -5,20 +5,20 @@ from django.dispatch import receiver
 
 
 class Restaurant(models.Model):
-    FINE_DINING = 1
-    CASUAL = 2
-    FAST_FOOD = 3
-    BUFFET = 4
-    PUB = 5
+    FINE_DINING = 'Fine Dining'
+    CASUAL = 'Casual'
+    FAST_FOOD = 'Fast Food'
+    BUFFET = 'Buffet'
+    PUB = 'Pub'
     FOOD_TYPE_CHOICES = (
-        (FINE_DINING, 'Fine Dining'),
-        (CASUAL, 'Casual'),
-        (FAST_FOOD, 'Fast Food'),
-        (BUFFET, 'Buffet'),
-        (PUB, 'Pub'),
+        (FINE_DINING, FINE_DINING),
+        (CASUAL, CASUAL),
+        (FAST_FOOD, FAST_FOOD),
+        (BUFFET, BUFFET),
+        (PUB, PUB),
     )
     name = models.CharField(max_length=255)
-    food_type = models.IntegerField(choices=FOOD_TYPE_CHOICES)
+    food_type = models.CharField(choices=FOOD_TYPE_CHOICES, max_length=100)
     city = models.CharField(max_length=255)
     address = models.TextField()
 
