@@ -14,6 +14,6 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_average_rating(obj):
-        if not hasattr(obj, 'restaurantrating'):
+        if not hasattr(obj, 'restaurantrating') or not obj.restaurantrating.total_voters > 0:
             return round(0.0, 2)
         return round(obj.restaurantrating.total_rating / obj.restaurantrating.total_voters, 2)

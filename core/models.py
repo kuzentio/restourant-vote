@@ -27,10 +27,10 @@ class Restaurant(models.Model):
 
 
 class RestaurantRating(models.Model):
-    ZERO_VOTE = 0
+    ZERO_VOTE = 0.0
     restaurant = models.OneToOneField(Restaurant, on_delete=models.CASCADE)
-    total_rating = models.PositiveIntegerField(default=ZERO_VOTE)
-    total_voters = models.PositiveIntegerField(default=ZERO_VOTE)
+    total_rating = models.FloatField(default=ZERO_VOTE)
+    total_voters = models.FloatField(default=ZERO_VOTE)
 
 
 class UserRating(models.Model):
