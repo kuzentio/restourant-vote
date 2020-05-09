@@ -18,7 +18,7 @@ class Restaurant(models.Model):
         (PUB, PUB),
     )
     name = models.CharField(max_length=255)
-    food_type = models.CharField(choices=FOOD_TYPE_CHOICES, max_length=100)
+    food_type = models.CharField(choices=FOOD_TYPE_CHOICES, max_length=100, blank=True)
     city = models.CharField(max_length=255)
     address = models.TextField()
 

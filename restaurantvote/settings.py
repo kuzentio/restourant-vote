@@ -91,12 +91,12 @@ DATABASES = {
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
-_DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# _DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Password validation
@@ -147,3 +147,10 @@ SHELL_PLUS_POST_IMPORTS = (
 )
 
 CSRF_COOKIE_NAME = "XSRF-TOKEN"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
