@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from api.urls import restaurant_list, restaurant_detail, user_rating_detail
 from core.views import index
@@ -10,7 +11,6 @@ urlpatterns = [
     path('api/restaurant/<int:pk>/', restaurant_detail, name='restaurant-detail'),
     path('api/user-rating/', user_rating_detail, name='user-rating'),
     path('api/user-rating/<int:restaurant>/', user_rating_detail, name='user-rating-detail'),
-    # path('api/user-rating/update/<int:pk>/', user_rating_detail, name='user-rating-detail'),
 
-    path("", index, name="index"),
+    path("", login_required(index), name="index"),
 ]

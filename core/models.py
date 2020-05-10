@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -59,13 +60,18 @@ class UserRating(models.Model):
 
 
 @receiver(post_save, sender=UserRating, dispatch_uid="update_restaurant_rating")
-def update_rating(sender, instance, **kwargs):
-    try:
-        rating = instance.restaurant.restaurantrating
-    except RestaurantRating.DoesNotExist:
-        rating = RestaurantRating.objects.create(
-            restaurant=instance.restaurant,
+def update_rating(sender, instance, created, **kwargs):
+    rating, _ = RestaurantRating.objects.get_or_create(
+        restaurant=instance.restaurant,
+    )
+    if created:
+        rating.total_rating += instance.rating
+        rating.total_voters += 1
+    else:
+        qs = UserRating.objects.filter(
+            restaurant=instance.restaurant
         )
-    rating.total_rating += instance.rating
-    rating.total_voters += 1
+        rating.total_rating = qs.aggregate(Sum('rating'))['rating__sum']
+        rating.total_voters = qs.count()
+
     rating.save()

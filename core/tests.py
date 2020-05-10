@@ -1,6 +1,5 @@
 from statistics import mean
 
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -78,7 +77,7 @@ class TestRatingView(APITestCase):
         restaurant = RestaurantFactory()
         user_rating = {
             "rating": 5,
-            "review": "FOOOO",
+            "review": "Excellent place",
             "restaurant": restaurant.id
         }
         response = self.client.post(reverse('user-rating'), data=user_rating)
@@ -87,7 +86,7 @@ class TestRatingView(APITestCase):
             self.assertContains(response, 'non_field_errors', status_code=status.HTTP_400_BAD_REQUEST)
 
 
-class TestRetrieveRestaurant(APITestCase):
+class TestRetrieveRestaurantDetail(APITestCase):
     def setUp(self):
         self.user = UserFactory(
             username='john',

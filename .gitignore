@@ -278,16 +278,6 @@ GitHub.sublime-settings
 [._]s[a-v][a-z]
 [._]sw[a-p]
 
-# Session
-Session.vim
-
-# Temporary
-.netrwhist
-
-# Auto-generated tag files
-tags
-
-
 ### VirtualEnv template
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
@@ -302,12 +292,5 @@ pip-selfcheck.json
 
 .idea/
 
-config/static/
-.notes
-
-gbot-trader/
-frontend/
-
-/db
-/bots-logs
-/staticroot
+frontend/build/
+frontend/node_modules/

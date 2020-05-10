@@ -9,9 +9,7 @@ restaurant_detail = RestaurantViewSet.as_view({
     'put': 'update',
     'delete': 'destroy',
 })
-
 user_rating_detail = UserRatingViewSet.as_view({
     'post': 'create',
     'get': 'retrieve',
-    'put': 'update',
 })

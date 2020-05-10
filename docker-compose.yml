@@ -5,6 +5,7 @@ services:
     build: .
     depends_on:
       - db
+      - npm-build
     env_file:
       - provision/.env
     volumes:
@@ -29,6 +30,16 @@ services:
     volumes:
       - ./provision/db:/docker-entrypoint-initdb.d
       - postgres-db:/var/lib/postgresql/data
+  npm-build:
+    image: node:14.1
+    command: >
+      sh -c "
+        cd restaurant-vote/frontend &&
+        npm install &&
+        npm run build
+      "
+    volumes:
+      - .:/restaurant-vote
 
 volumes:
   postgres-db:
