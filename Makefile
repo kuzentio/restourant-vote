@@ -4,6 +4,9 @@ start:
 initDB:
 	docker-compose exec web python manage.py init_db_data
 
+create-superuser:
+	docker-compose exec web python manage.py createsuperuser
+
 destroy:
 	docker-compose down -v
 	docker-compose rm -f -s -v

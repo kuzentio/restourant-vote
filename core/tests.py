@@ -32,10 +32,57 @@ class TestListRestaurants(APITestCase):
         avg_rating = UserRating.objects.filter(restaurant=restaurant).values_list('rating', flat=True)
         self.assertEqual(response.json()[0]['average_rating'], mean(avg_rating))
 
-    def test_user_rating_affect_restaurant_rating(self):
+    def test_user_rating_does_affect_restaurant_rating(self):
         restaurant = RestaurantFactory()
         UserRatingFactory(restaurant=restaurant)
         UserRatingFactory(restaurant=restaurant)
+
+    def test_post_restaurant_creates_restaurant(self):
+        new_restaurant_data = {
+            'name': 'Sun Cafe',
+            'food_type': Restaurant.CASUAL,
+            'city': 'New York',
+            'address': 'somerandomaddress',
+        }
+        self.assertEqual(Restaurant.objects.all().count(), 0)
+        response = self.client.post(reverse('restaurant-list'), data=new_restaurant_data)
+        self.assertEqual(Restaurant.objects.all().count(), 1)
+        self.assertEqual(response.json()['name'], new_restaurant_data['name'])
+
+    def test_delete_restaurant(self):
+        restaurant = RestaurantFactory()
+        self.assertEqual(Restaurant.objects.count(), 1)
+        self.client.delete(reverse('restaurant-detail', args=(restaurant.id, )))
+        self.assertEqual(Restaurant.objects.count(), 0)
+
+    def test_edit_restaurant_data(self):
+        restaurant = RestaurantFactory()
+
+        updated_restaurant_data = {
+            'name': restaurant.name + '!',
+            'city': restaurant.city + '!',
+            'address': restaurant.address + '!',
+            'food_type': Restaurant.CASUAL,
+        }
+        self.assertEqual(Restaurant.objects.get().name, restaurant.name)
+        self.assertEqual(Restaurant.objects.get().city, restaurant.city)
+        self.client.put(reverse('restaurant-detail', args=(restaurant.id, )), data=updated_restaurant_data)
+        self.assertEqual(Restaurant.objects.get().name, updated_restaurant_data['name'])
+        self.assertEqual(Restaurant.objects.get().city, updated_restaurant_data['city'])
+
+    def test_ordering_by_avg_rating(self):
+        for i in range(5):
+            restaurant = RestaurantFactory()
+            for _ in range(2):
+                UserRatingFactory(restaurant=restaurant, rating=1.0)
+        response = self.client.get("{0}?{1}={2}".format(reverse('restaurant-list'), 'order_by', 'default'))
+        self.assertEqual(response.json()[-1]['id'], Restaurant.objects.first().id)
+        self.assertEqual(response.json()[0]['id'], Restaurant.objects.last().id)
+
+        restaurant = Restaurant.objects.last()
+        UserRatingFactory(restaurant=restaurant, rating=5.0)
+        response = self.client.get("{0}?{1}={2}".format(reverse('restaurant-list'), 'order_by', 'recommended'))
+        self.assertEqual(response.json()[0]['id'], restaurant.id)
 
 
 class TestRatingView(APITestCase):
@@ -69,21 +116,9 @@ class TestRatingView(APITestCase):
             "review": "Excellent place",
             "restaurant": restaurant.id
         }
-        response = self.client.post(reverse('user-rating'), data=user_rating)
+        response = self.client.post(reverse('user-rating-detail', args=(restaurant.id, )), data=user_rating)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.json()['restaurant'], restaurant.id)
-
-    def test_user_rating_should_be_unique_for_restaurant(self):
-        restaurant = RestaurantFactory()
-        user_rating = {
-            "rating": 5,
-            "review": "Excellent place",
-            "restaurant": restaurant.id
-        }
-        response = self.client.post(reverse('user-rating'), data=user_rating)
-        if response.status_code == status.HTTP_201_CREATED:
-            response = self.client.post(reverse('user-rating'), data=user_rating)
-            self.assertContains(response, 'non_field_errors', status_code=status.HTTP_400_BAD_REQUEST)
 
 
 class TestRetrieveRestaurantDetail(APITestCase):
@@ -94,9 +129,8 @@ class TestRetrieveRestaurantDetail(APITestCase):
         )
         self.client.force_authenticate(self.user)
 
-    # def test_retrieve_restaurant_detail_with_rating(self):
-    #     restaurant = RestaurantFactory()
-    #     user_rating = UserRatingFactory(restaurant=restaurant, user=self.user)
-    #     response = self.client.get(reverse('restaurant-detail', args=(restaurant.id, )))
-    #     import ipdb; ipdb.set_trace()
-
+    def test_restaurant_detail(self):
+        restaurant = RestaurantFactory()
+        response = self.client.get(reverse('restaurant-detail', args=(restaurant.id, )))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['id'], restaurant.id)
