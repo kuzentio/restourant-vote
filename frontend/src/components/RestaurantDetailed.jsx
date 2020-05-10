@@ -60,6 +60,10 @@ class RestaurantDetailed extends React.Component {
                 <div>loading</div>
             )
         }
+        const isAbleToSend =
+            this.state.restaurantReview.rating &&
+            this.state.restaurantReview.review;
+
         return (
             <div className={"container"}>
                 <p><Link to={"/"}>Getting back to list of restaurants</Link></p>
@@ -94,7 +98,7 @@ class RestaurantDetailed extends React.Component {
                             placeholder="Enter restaurant review"
                         />
                     </FormGroup>
-                    <Button onClick={() => this.handleSubmitReview(restaurantReview)} className="btn btn-success">
+                    <Button onClick={() => this.handleSubmitReview(restaurantReview)} className="btn btn-success" disabled={!isAbleToSend}>
                         Save
                     </Button>
                 </Form>

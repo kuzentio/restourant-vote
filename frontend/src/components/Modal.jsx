@@ -27,6 +27,12 @@ class CustomModal extends Component {
 
     render() {
         const {toggle, onSave} = this.props;
+        const isAbleToSend =
+            this.state.activeItem.name &&
+            this.state.activeItem.city &&
+            this.state.activeItem.address &&
+            this.state.activeItem.food_type;
+
 
         return (
             <Modal isOpen={true} toggle={toggle}>
@@ -38,7 +44,7 @@ class CustomModal extends Component {
                             <Input
                                 type="text"
                                 name="name"
-                                value={this.state.activeItem.name || ''}
+                                value={this.state.activeItem.name}
                                 onChange={this.handleChange}
                                 placeholder="Enter restaurant name"
                             />
@@ -78,7 +84,7 @@ class CustomModal extends Component {
                     </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="success" onClick={() => onSave(this.state.activeItem)}>
+                    <Button color="success" onClick={() => onSave(this.state.activeItem)} disabled={!isAbleToSend}>
                         Save
                     </Button>
                 </ModalFooter>
