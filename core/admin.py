@@ -9,12 +9,12 @@ class RestaurantAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserRating)
-class RestaurantAdmin(admin.ModelAdmin):
+class UserRatingAdmin(admin.ModelAdmin):
     list_display = ('restaurant', 'rating', 'review')
 
 
 @admin.register(RestaurantRating)
-class RestaurantAdmin(admin.ModelAdmin):
+class RestaurantRatingAdmin(admin.ModelAdmin):
     list_display = ('restaurant', 'get_avg_rating')
 
     def get_avg_rating(self, obj):

@@ -1,6 +1,9 @@
 start:
 	docker-compose up
 
+start-in-deamon:
+	docker-compose up -d
+
 initDB:
 	docker-compose exec web python manage.py init_db_data
 
